@@ -51,7 +51,6 @@ const showWatchlist = shows
     }));
 
 const movieWatchlist = movies
-    .filter((movie) => !movie.is_watched)
     .map((movie) => ({
         watched_at: movie.watched_at,
         ids: {
@@ -116,8 +115,17 @@ const showHistory = shows
             })),
     }));
 
-const movieHistory = movieWatchlist
-    .filter((movie) => movie.watched_at != null);
+const movieHistory = movies
+    .filter((movie) => movie.is_watched)
+    .map((movie) => ({
+        watched_at: movie.watched_at,
+        ids: {
+            imdb: movie.id.imdb,
+            slug: "",
+            tmdb: -Infinity,
+            trakt: -Infinity,
+        },
+    }));
 
 const episodeCount = showHistory.reduce(
     (accShow, show) =>
@@ -135,7 +143,7 @@ await traktUnlimited()
             /**
              * Library typings are not compliant with Trakt Apiary documentation.
              *
-             * See: https://trakt.docs.apiary.io/#reference/sync/add-to-history/add-items-to-watched-history
+             * See: [https://trakt.docs.apiary.io/#reference/sync/add-to-history/add-items-to-watched-history](https://trakt.docs.apiary.io/#reference/sync/add-to-history/add-items-to-watched-history)
              */
             // @ts-expect-error
             shows: showHistory,
